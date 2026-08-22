@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Solstice Events Co. — Check-In Kiosk</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="brand">
+      <svg class="brand-mark" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <path d="M4 26C4 26 12 10 22 10C32 10 40 26 40 26" stroke="url(#arcGradient)" stroke-width="3" stroke-linecap="round"/>
+        <circle cx="22" cy="17" r="5" fill="url(#sunGradient)"/>
+        <line x1="4" y1="33" x2="40" y2="33" stroke="#2E3A6E" stroke-width="2" stroke-linecap="round"/>
+        <defs>
+          <linearGradient id="arcGradient" x1="4" y1="18" x2="40" y2="18" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#F2A93B"/>
+            <stop offset="0.5" stop-color="#FFCB66"/>
+            <stop offset="1" stop-color="#3FC98A"/>
+          </linearGradient>
+          <linearGradient id="sunGradient" x1="17" y1="12" x2="27" y2="22" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#FFCB66"/>
+            <stop offset="1" stop-color="#F2A93B"/>
+          </linearGradient>
+        </defs>
+      </svg>
+      <div class="brand-text">
+        <span class="brand-name">Solstice Events Co.</span>
+        <span class="brand-tag">Staff Check-In Kiosk</span>
+      </div>
+    </div>
+    <div class="event-info">
+      <span class="event-title">TechForward Summit 2026</span>
+      <span class="event-dates">Oct 14–16 · KICC, Nairobi</span>
+    </div>
+  </header>
+
+  <main class="kiosk">
+
+    <section class="panel scan-panel" aria-labelledby="scan-heading">
+      <h1 id="scan-heading" class="panel-heading">Scan or search</h1>
+      <p class="panel-sub">Scan a badge QR code with the camera, or enter an attendee ID below.</p>
+
+      <button type="button" id="camera-toggle-btn" class="btn btn-camera">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M4 8C4 6.89543 4.89543 6 6 6H8L9.2 4.4C9.4 4.15 9.7 4 10 4H14C14.3 4 14.6 4.15 14.8 4.4L16 6H18C19.1046 6 20 6.89543 20 8V17C20 18.1046 19.1046 19 18 19H6C4.89543 19 4 18.1046 4 17V8Z" stroke="currentColor" stroke-width="1.8"/>
+          <circle cx="12" cy="12.5" r="3.4" stroke="currentColor" stroke-width="1.8"/>
+        </svg>
+        Scan Badge QR Code
+      </button>
+      <button type="button" id="show-test-qr-btn" class="btn-link">
+        Don't have a badge? View test QR codes
+      </button>
+
+      <div id="camera-panel" class="camera-panel hidden">
+        <div class="camera-frame">
+          <video id="camera-video" playsinline autoplay muted></video>
+          <div class="camera-guide" aria-hidden="true"></div>
+        </div>
+        <p class="camera-hint">Hold a badge QR code steady in front of the camera</p>
+        <button type="button" id="camera-stop-btn" class="btn btn-secondary btn-block">
+          Cancel Scanning
+        </button>
+      </div>
+      <canvas id="camera-canvas" class="hidden"></canvas>
+
+      <div class="divider"><span>or enter manually</span></div>
+
+      <form id="search-form" class="search-form">
+        <label for="attendee-id" class="field-label">Attendee ID</label>
+        <input
+          type="text"
+          id="attendee-id"
+          name="attendee-id"
+          class="id-input"
+          placeholder="e.g. ATT001"
+          autocomplete="off"
+          autocapitalize="characters"
+          spellcheck="false"
+        />
+        <button type="submit" class="btn btn-primary" id="search-btn">
+          Search Attendee
+        </button>
+      </form>
+
+      <div class="quick-ids">
+        <span class="quick-ids-label">Test IDs</span>
+        <div class="quick-ids-list">
+          <button type="button" class="chip" data-id="ATT001">ATT001</button>
+          <button type="button" class="chip" data-id="ATT002">ATT002</button>
+          <button type="button" class="chip" data-id="ATT003">ATT003</button>
+        </div>
+      </div>
+
+      <div id="search-error" class="notice notice-error hidden" role="alert"></div>
+    </section>
+
+    <section class="panel detail-panel" aria-labelledby="detail-heading" aria-live="polite">
+      <h2 id="detail-heading" class="panel-heading">Attendee</h2>
+
+      <div id="empty-state" class="empty-state">
+        <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <rect x="6" y="10" width="36" height="28" rx="3" stroke="#2E3A6E" stroke-width="2"/>
+          <path d="M6 16H42" stroke="#2E3A6E" stroke-width="2"/>
+          <circle cx="14" cy="13" r="1.4" fill="#2E3A6E"/>
+          <circle cx="19" cy="13" r="1.4" fill="#2E3A6E"/>
+        </svg>
+        <p>No attendee selected yet.<br>Scan a badge or enter an ID to begin.</p>
+      </div>
+
+      <article id="attendee-card" class="attendee-card hidden">
+        <div class="attendee-card-top">
+          <div>
+            <h3 id="attendee-name" class="attendee-name">—</h3>
+            <p id="attendee-id-display" class="attendee-id-display">—</p>
+          </div>
+          <span id="status-badge" class="status-badge">—</span>
+        </div>
+
+        <dl class="attendee-meta">
+          <div class="meta-row">
+            <dt>Email</dt>
+            <dd id="attendee-email">—</dd>
+          </div>
+          <div class="meta-row">
+            <dt>Ticket type</dt>
+            <dd id="attendee-ticket">—</dd>
+          </div>
+          <div class="meta-row" id="badge-id-row" hidden>
+            <dt>Badge ID</dt>
+            <dd id="attendee-badge-id">—</dd>
+          </div>
+        </dl>
+
+        <div id="printing-indicator" class="printing-indicator hidden">
+          <svg class="arc-loader" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M4 26C4 26 12 10 22 10C32 10 40 26 40 26" stroke="#2E3A6E" stroke-width="3" stroke-linecap="round"/>
+            <path class="arc-sweep" d="M4 26C4 26 12 10 22 10C32 10 40 26 40 26" stroke="url(#arcGradient)" stroke-width="3" stroke-linecap="round"/>
+          </svg>
+          <span>Printing badge&hellip; please wait</span>
+        </div>
+
+        <div id="checkin-notice" class="notice hidden" role="status"></div>
+
+        <button type="button" id="checkin-btn" class="btn btn-primary btn-block">
+          Check In &amp; Print Badge
+        </button>
+      </article>
+    </section>
+
+  </main>
+
+  <footer class="site-footer">
+    <span>Solstice Events Co. &middot; Synchronous check-in build</span>
+  </footer>
+
+  <div id="qr-modal" class="modal-overlay hidden">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="qr-modal-heading">
+      <div class="modal-header">
+        <h3 id="qr-modal-heading">Test badge QR codes</h3>
+        <button type="button" id="qr-modal-close" class="modal-close" aria-label="Close">&times;</button>
+      </div>
+      <p class="modal-sub">Click "Scan Badge QR Code," then hold one of these up to the camera.</p>
+      <div class="qr-grid">
+        <div class="qr-item">
+          <canvas id="qr-ATT001"></canvas>
+          <span>ATT001 &middot; Alice Johnson</span>
+        </div>
+        <div class="qr-item">
+          <canvas id="qr-ATT002"></canvas>
+          <span>ATT002 &middot; Brian Otieno</span>
+        </div>
+        <div class="qr-item">
+          <canvas id="qr-ATT003"></canvas>
+          <span>ATT003 &middot; Mary Wanjiku</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
