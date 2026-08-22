@@ -1,13 +1,14 @@
 {
   "name": "solstice-checkin",
   "version": "1.0.0",
-  "description": "Solstice Events Co. conference attendee check-in kiosk (synchronous REST version, pre-pivot).",
+  "description": "Solstice Events Co. conference attendee check-in kiosk (post-pivot asynchronous queue and webhook model).",
   "main": "server.js",
   "engines": {
     "node": ">=18"
   },
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "test": "node --test"
   },
   "dependencies": {
     "express": "^4.19.2"
